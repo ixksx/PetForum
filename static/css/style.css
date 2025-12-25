@@ -466,7 +466,6 @@ textarea.form-control {
 .alert-error {
     background: linear-gradient(135deg, rgba(255, 82, 82, 0.1) 0%, rgba(255, 107, 139, 0.1) 100%);
     color: var(--error-color);
-    border-left: 4px solid var(--error-color);
 }
 
 .alert-success {
@@ -650,6 +649,7 @@ textarea.form-control {
     padding: 2.5rem;
     box-shadow: var(--shadow-medium);
     margin-top: 3rem;
+    margin-bottom: 3rem;
 }
 
 .comments-section h3 {
