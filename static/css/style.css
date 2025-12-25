@@ -323,6 +323,9 @@ p {
     padding-top: 1.5rem;
     border-top: 2px solid var(--border-color);
 }
+.no-posts{
+    margin-bottom: 2rem;
+}
 
 .like-btn,
 .dislike-btn {
