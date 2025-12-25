@@ -30,10 +30,8 @@ def login_view(request):
             login(request, user)
             user.update_last_seen()
 
-            # Создаем JWT токены
             refresh = RefreshToken.for_user(user)
 
-            # Сохраняем токены в сессии
             request.session["access_token"] = str(refresh.access_token)
             request.session["refresh_token"] = str(refresh)
 
@@ -42,7 +40,6 @@ def login_view(request):
     else:
         form = LoginForm()
 
-    # Добавляем параметр next в контекст
     next_url = request.GET.get("next", "")
     return render(request, "login.html", {"form": form, "next": next_url})
 
@@ -52,13 +49,10 @@ def logout_view(request):
     return redirect("home")
 
 
-# УБИРАЕМ декоратор @login_required чтобы профиль был доступен всем
 def profile_view(request, username):
     user = get_object_or_404(User, username=username)
     posts = Post.objects.filter(author=user).order_by("-created_at")
 
-    # Обновляем время последнего посещения для просматриваемого пользователя
-    # (если это не текущий пользователь И пользователь авторизован)
     if request.user.is_authenticated and request.user != user:
         UserActivity.objects.create(
             user=user,

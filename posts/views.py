@@ -35,12 +35,10 @@ def create_post_view(request):
     return render(request, "create_post.html", {"form": form})
 
 
-# УБИРАЕМ декоратор @login_required чтобы пост был доступен всем
 def post_detail_view(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comments = post.comments.all()
 
-    # Получаем реакцию текущего пользователя (если авторизован)
     user_reaction = None
     if request.user.is_authenticated:
         try:
@@ -77,7 +75,6 @@ def like_post_view(request, pk):
     if request.method == "POST":
         post = get_object_or_404(Post, pk=pk)
 
-        # Парсим JSON данные
         try:
             data = json.loads(request.body)
             is_like = data.get("is_like")
@@ -89,13 +86,10 @@ def like_post_view(request, pk):
         if isinstance(is_like, str):
             is_like = is_like.lower() == "true"
 
-        # Удаляем старую реакцию если есть
         PostLike.objects.filter(user=request.user, post=post).delete()
 
-        # Создаем новую реакцию
         PostLike.objects.create(user=request.user, post=post, is_like=is_like)
 
-        # Обновляем счетчики
         post.refresh_from_db()
 
         return JsonResponse(
