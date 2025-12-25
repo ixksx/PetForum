@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}PetForum - Главная страница{% endblock %}
+
+{% block content %}
+<div class="home-header">
+    <h1>Добро пожаловать в PetForum!</h1>
+    <p>Уютное сообщество для обсуждения всего, что связано с домашними питомцами. Делитесь историями, находите друзей и получайте советы от таких же любителей животных!</p>
+
+    {% if user.is_authenticated %}
+    <div style="margin-top: 2rem;">
+        <a href="{% url 'create_post' %}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+            Поделиться историей
+        </a>
+    </div>
+    {% else %}
+    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+        <a href="{% url 'register' %}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+            Присоединиться
+        </a>
+        <a href="{% url 'login' %}" class="btn btn-secondary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+            Войти
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% if user.is_authenticated %}
+<div class="create-post-link">
+    <div style="display: flex; align-items: center; gap: 1rem; justify-content: center; margin-bottom: 1rem;">
+        <h3 style="margin: 0; color: var(--secondary-color);">Что нового у вашего питомца?</h3>
+    </div>
+    <a href="{% url 'create_post' %}" class="btn btn-primary" style="font-size: 1.2rem; padding: 1.2rem 3rem;">
+        Создать новый пост
+    </a>
+</div>
+{% endif %}
+
+<div class="posts-container">
+    {% if posts %}
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="color: var(--secondary-color);">Последние публикации</h2>
+            <p style="color: var(--text-light);">Поделитесь мнением и поддержите авторов!</p>
+        </div>
+
+        {% for post in posts %}
+        <div class="post-card" id="post-{{ post.id }}">
+            <div class="post-header">
+                <a href="{% url 'profile' post.author.username %}" class="post-author">
+                    {% if post.author.avatar %}
+                        <img src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}" class="avatar">
+                    {% else %}
+                        <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">
+                            {{ post.author.username|first|upper }}
+                        </div>
+                    {% endif %}
+                    <div>
+                        <div style="font-weight: 700; font-size: 1.1rem;">{{ post.author.username }}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">
+                            {% if post.author.is_online %}
+                            <span style="color: var(--success-color);">● Онлайн</span>
+                            {% else %}
+                            <span style="color: var(--text-light);">Был(а) {{ post.author.last_seen|timesince }} назад</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                <span class="post-date">{{ post.created_at|date:"d M Y, H:i" }}</span>
+            </div>
+
+            <div class="post-content">
+                <p>{{ post.content|linebreaks }}</p>
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="Изображение поста" class="post-image">
+                {% endif %}
+            </div>
+
+            <div class="post-actions">
+                {% if user.is_authenticated %}
+                <button class="like-btn" data-post-id="{{ post.id }}" data-action="like">
+                    <img src="static/images/like.svg"> <span class="like-count">{{ post.likes_count }}</span>
+                </button>
+                <button class="dislike-btn" data-post-id="{{ post.id }}" data-action="dislike">
+                    <img src="static/images/dislike.svg"> <span class="dislike-count">{{ post.dislikes_count }}</span>
+                </button>
+                {% else %}
+                <button class="like-btn disabled" onclick="window.location.href='/login/'">
+                    <img src="static/images/like.svg"> {{ post.likes_count }}
+                </button>
+                <button class="dislike-btn disabled" onclick="window.location.href='/login/'">
+                    <img src="static/images/dislike.svg"> {{ post.dislikes_count }}
+                </button>
+                {% endif %}
+                <a href="{% url 'post_detail' post.id %}" class="comment-link">
+                    <img src="static/images/comment.svg"> {{ post.comments_count }}
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="no-posts" style="text-align: center; padding: 4rem 2rem; background: var(--card-color); border-radius: 24px; box-shadow: var(--shadow-medium);">
+        <h2 style="color: var(--secondary-color);">Пока здесь тихо...</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 2rem;">Будьте первым, кто поделится историей о своем питомце!</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'create_post' %}" class="btn btn-primary">Написать первый пост</a>
+        {% else %}
+        <a href="{% url 'register' %}" class="btn btn-primary">Присоединиться и начать общение</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

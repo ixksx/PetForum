@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация - PetForum{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Присоединяйтесь к сообществу PetForum!</h2>
+        <p style="text-align: center; margin-bottom: 2rem; color: var(--text-light);">
+            Создайте аккаунт и делитесь историями о ваших питомцах
+        </p>
+
+        {% if form.errors %}
+        <div class="alert alert-error">
+            <strong>Пожалуйста, исправьте ошибки ниже:</strong>
+            <ul class="error-list">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" class="auth-form" id="register-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_username">Имя пользователя:</label>
+                {{ form.username }}
+                <span class="form-hint">Только буквы, цифры и @/./+/-/_<br>От 3 до 150 символов</span>
+                {% if form.username.errors %}
+                <ul class="error-list">
+                    {% for error in form.username.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_email">Email:</label>
+                {{ form.email }}
+                <span class="form-hint">Введите действующий email адрес</span>
+                {% if form.email.errors %}
+                <ul class="error-list">
+                    {% for error in form.email.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password1">Пароль:</label>
+                {{ form.password1 }}
+                <span class="form-hint">Минимум 8 символов<br>Не должен состоять только из цифр</span>
+                {% if form.password1.errors %}
+                <ul class="error-list">
+                    {% for error in form.password1.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password2">Подтверждение пароля:</label>
+                {{ form.password2 }}
+                <span class="form-hint">Введите пароль еще раз для подтверждения</span>
+                {% if form.password2.errors %}
+                <ul class="error-list">
+                    {% for error in form.password2.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-top: 2.5rem;">
+                <button type="submit" class="btn btn-primary btn-block">
+                    Зарегистрироваться
+                </button>
+            </div>
+        </form>
+
+        <div class="auth-links">
+            <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+            <p><a href="{% url 'home' %}">Вернуться на главную</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('register-form');
+    const password1 = document.getElementById('id_password1');
+    const password2 = document.getElementById('id_password2');
+
+    // Валидация паролей в реальном времени
+    function validatePasswords() {
+        const password1Value = password1.value;
+        const password2Value = password2.value;
+
+        if (password1Value && password2Value && password1Value !== password2Value) {
+            password2.style.borderColor = 'var(--error-color)';
+            password2.style.boxShadow = '0 0 0 3px rgba(255, 82, 82, 0.1)';
+        } else if (password2Value) {
+            password2.style.borderColor = 'var(--success-color)';
+            password2.style.boxShadow = '0 0 0 3px rgba(76, 175, 80, 0.1)';
+        }
+    }
+
+    password1.addEventListener('input', validatePasswords);
+    password2.addEventListener('input', validatePasswords);
+
+    // Валидация username
+    const username = document.getElementById('id_username');
+    username.addEventListener('input', function() {
+        const usernameValue = this.value;
+        if (usernameValue.length > 0) {
+            if (usernameValue.length < 3) {
+                this.style.borderColor = 'var(--warning-color)';
+            } else if (usernameValue.length >= 3 && usernameValue.length <= 150) {
+                this.style.borderColor = 'var(--success-color)';
+            } else {
+                this.style.borderColor = 'var(--error-color)';
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

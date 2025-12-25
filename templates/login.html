@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход - PetForum{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Добро пожаловать обратно!</h2>
+        <p style="text-align: center; margin-bottom: 2rem; color: var(--text-light);">
+            Войдите в свой аккаунт, чтобы продолжить общение
+        </p>
+
+        {% if form.errors %}
+        <div class="alert alert-error">
+            <strong>Неверное имя пользователя или пароль.</strong>
+            <p style="margin-top: 0.5rem;">Пожалуйста, проверьте введенные данные и попробуйте снова.</p>
+        </div>
+        {% endif %}
+
+        {% if next %}
+            {% if user.is_authenticated %}
+            <div class="alert alert-error">
+                <p>У вашего аккаунта нет доступа к этой странице.</p>
+            </div>
+            {% else %}
+            <div class="alert alert-error">
+                <p>Пожалуйста, войдите в систему, чтобы увидеть эту страницу.</p>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+
+            <div class="form-group">
+                <label for="id_username">Имя пользователя:</label>
+                {{ form.username }}
+                <span class="form-hint">Введите ваше имя пользователя</span>
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">Пароль:</label>
+                {{ form.password }}
+                <span class="form-hint">Введите ваш пароль</span>
+            </div>
+
+            <div class="form-group" style="margin-top: 2.5rem;">
+                <button type="submit" class="btn btn-primary btn-block">
+                    Войти
+                </button>
+            </div>
+        </form>
+
+        <div class="auth-links">
+            <p>Нет аккаунта? <a href="{% url 'register' %}">Присоединиться к сообществу</a></p>
+            <p><a href="{% url 'home' %}">Вернуться на главную</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

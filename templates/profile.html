@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль {{ profile_user.username }} - PetForum{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {% if profile_user.avatar %}
+                <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user.username }}">
+            {% else %}
+                <div class="avatar-placeholder">{{ profile_user.username|first|upper }}</div>
+            {% endif %}
+        </div>
+
+        <div class="profile-info">
+            <h1>{{ profile_user.username }}</h1>
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Посты:</span>
+                    <span class="stat-value">{{ profile_user.posts_count }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Статус:</span>
+                    <span class="stat-value status-{% if profile_user.is_online %}online{% else %}offline{% endif %}">
+                        {% if profile_user.is_online %}Онлайн{% else %}Офлайн{% endif %}
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">На сайте с:</span>
+                    <span class="stat-value">{{ profile_user.date_joined|date:"d.m.Y" }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Последний раз в сети:</span>
+                    <span class="stat-value last-seen-time" data-last-seen="{{ profile_user.last_seen|date:'c' }}">
+                        {{ profile_user.last_seen|date:"d.m.Y H:i" }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <h2>Посты пользователя</h2>
+
+        {% if posts %}
+        <div class="user-posts">
+            {% for post in posts %}
+            <div class="user-post">
+                <div class="post-meta">
+                    <span class="post-date">{{ post.created_at|date:"d.m.Y H:i" }}</span>
+                    <span class="post-stats">
+                        <img src="/static/images/like.svg"> {{ post.likes_count }} <img src="/static/images/dislike.svg"> {{ post.dislikes_count }} <img src="/static/images/comment.svg"> {{ post.comments_count }}
+                    </span>
+                </div>
+                <p class="post-content-preview">{{ post.content|truncatechars:150 }}</p>
+                {% if post.image %}
+                <div class="post-image-preview">
+                    <img src="{{ post.image.url }}" alt="Изображение поста" style="max-width: 150px; max-height: 150px;">
+                </div>
+                {% endif %}
+                <a href="{% url 'post_detail' post.id %}" class="read-more">Читать полностью</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-posts">
+            <p>Пользователь пока не опубликовал ни одного поста.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
