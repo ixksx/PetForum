@@ -36,7 +36,7 @@ class PostLike(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="post_likes"
     )
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
-    is_like = models.BooleanField()  # True - лайк, False - дизлайк
+    is_like = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

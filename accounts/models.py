@@ -9,7 +9,7 @@ class User(AbstractUser):
 
     @property
     def is_online(self):
-        return (timezone.now() - self.last_seen).seconds < 300  # 5 минут
+        return (timezone.now() - self.last_seen).seconds < 300
 
     @property
     def posts_count(self):
@@ -20,7 +20,6 @@ class User(AbstractUser):
         self.save(update_fields=["last_seen"])
 
     def get_last_seen_display(self):
-        """Возвращает отформатированное время последнего посещения"""
         time_since = timezone.now() - self.last_seen
         minutes = int(time_since.total_seconds() / 60)
         hours = int(minutes / 60)
